@@ -1,10 +1,11 @@
 "use client";
 
-// เครื่องคำนวณสด — กรอกค่าแล้วโชว์ P, I, R, พลังงาน, ค่าไฟ ทันที
-// กดปุ่ม "เพิ่มอุปกรณ์" เพื่อส่งข้อมูลขึ้นไปให้หน้าหลักเก็บลงรายการ
+// เครื่องคำนวณสด — กรอกค่าแล้วโชว์ P, I, R, พลังงาน, ค่าไฟ ทันที (ธีม blueprint)
 import { useState } from "react";
 import { Device, InputMode, computeMetrics, fmt } from "@/lib/calc";
 import { newId } from "@/lib/storage";
+import Panel from "./Panel";
+import { PlusIcon } from "./icons";
 
 export default function LiveCalculator({
   rate,
@@ -20,7 +21,6 @@ export default function LiveCalculator({
   const [hours, setHours] = useState("8");
   const [error, setError] = useState("");
 
-  // แปลงข้อความในช่องกรอกเป็นตัวเลขเพื่อคำนวณสด
   const draft = {
     voltage: Number(voltage) || 0,
     mode,
@@ -41,17 +41,15 @@ export default function LiveCalculator({
   }
 
   const inputClass =
-    "w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-800 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100";
+    "w-full rounded-sm border border-cyan-400/30 bg-[#0a1c38] px-3 py-2 font-mono text-cyan-50 placeholder:text-cyan-300/30 outline-none focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/20";
+  const labelClass =
+    "mb-1 block font-mono text-[11px] uppercase tracking-wider text-cyan-300/70";
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-      <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-800">
-        📐 เครื่องคำนวณ + เพิ่มอุปกรณ์
-      </h2>
-
+    <Panel index="01" title="Calculator · เพิ่มอุปกรณ์">
       <div className="space-y-3">
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-600">ชื่ออุปกรณ์</label>
+          <label className={labelClass}>ชื่ออุปกรณ์ / Name</label>
           <input
             className={inputClass}
             placeholder="เช่น เครื่องปรับอากาศ"
@@ -62,7 +60,7 @@ export default function LiveCalculator({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-600">แรงดัน (V)</label>
+            <label className={labelClass}>แรงดัน V</label>
             <input
               className={inputClass}
               type="number"
@@ -71,7 +69,7 @@ export default function LiveCalculator({
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-600">ชั่วโมง/วัน</label>
+            <label className={labelClass}>ชม./วัน</label>
             <input
               className={inputClass}
               type="number"
@@ -81,19 +79,18 @@ export default function LiveCalculator({
           </div>
         </div>
 
-        {/* สลับโหมดการกรอก: กำลังไฟ หรือ กระแส */}
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-600">ระบุค่าด้วย</label>
+          <label className={labelClass}>ระบุค่าด้วย / Input</label>
           <div className="grid grid-cols-2 gap-2">
             {(["power", "current"] as InputMode[]).map((mOpt) => (
               <button
                 key={mOpt}
                 type="button"
                 onClick={() => setMode(mOpt)}
-                className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                className={`rounded-sm border px-3 py-2 font-mono text-sm transition ${
                   mode === mOpt
-                    ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                    : "border-slate-300 bg-white text-slate-500 hover:bg-slate-50"
+                    ? "border-cyan-300 bg-cyan-400/10 text-cyan-200"
+                    : "border-cyan-400/20 bg-transparent text-cyan-300/50 hover:border-cyan-400/40"
                 }`}
               >
                 {mOpt === "power" ? "กำลังไฟ (W)" : "กระแส (A)"}
@@ -103,7 +100,7 @@ export default function LiveCalculator({
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-600">
+          <label className={labelClass}>
             {mode === "power" ? "กำลังไฟ (วัตต์)" : "กระแส (แอมป์)"}
           </label>
           <input
@@ -115,29 +112,30 @@ export default function LiveCalculator({
           />
         </div>
 
-        {/* ผลคำนวณสด */}
-        <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-50 p-3 text-sm sm:grid-cols-3">
-          <Stat label="กำลังไฟ P" value={`${fmt(m.power)} W`} />
-          <Stat label="กระแส I" value={`${fmt(m.current)} A`} />
-          <Stat label="ความต้านทาน R" value={`${fmt(m.resistance)} Ω`} />
-          <Stat label="พลังงาน" value={`${fmt(m.energy)} kWh`} />
-          <Stat label="ค่าไฟ/เดือน" value={`${fmt(m.cost)} ฿`} highlight />
+        {/* แผงผลคำนวณสด เหมือนหน้าปัดมิเตอร์ */}
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-cyan-400/20 bg-cyan-400/20 sm:grid-cols-3">
+          <Readout label="P" value={`${fmt(m.power)} W`} />
+          <Readout label="I" value={`${fmt(m.current)} A`} />
+          <Readout label="R" value={`${fmt(m.resistance)} Ω`} />
+          <Readout label="kWh/ด." value={fmt(m.energy)} />
+          <Readout label="฿/ด." value={fmt(m.cost)} highlight />
+          <Readout label="V" value={`${fmt(draft.voltage, 0)} V`} />
         </div>
 
-        {error && <p className="text-sm text-rose-600">{error}</p>}
+        {error && <p className="font-mono text-sm text-rose-400">! {error}</p>}
 
         <button
           onClick={handleAdd}
-          className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 font-semibold text-white transition hover:bg-indigo-700 active:scale-[0.99]"
+          className="flex w-full items-center justify-center gap-2 rounded-sm border border-cyan-300 bg-cyan-400/15 px-4 py-2.5 font-mono text-sm font-semibold uppercase tracking-wider text-cyan-100 transition hover:bg-cyan-400/25 active:scale-[0.99]"
         >
-          ➕ เพิ่มอุปกรณ์ลงรายการ
+          <PlusIcon className="h-4 w-4" /> เพิ่มอุปกรณ์
         </button>
       </div>
-    </div>
+    </Panel>
   );
 }
 
-function Stat({
+function Readout({
   label,
   value,
   highlight,
@@ -147,9 +145,15 @@ function Stat({
   highlight?: boolean;
 }) {
   return (
-    <div>
-      <div className="text-xs text-slate-400">{label}</div>
-      <div className={`font-semibold ${highlight ? "text-rose-600" : "text-slate-700"}`}>
+    <div className="bg-[#0a1c38] px-3 py-2">
+      <div className="font-mono text-[10px] uppercase tracking-wider text-cyan-400/50">
+        {label}
+      </div>
+      <div
+        className={`font-mono text-sm font-semibold tabular-nums ${
+          highlight ? "text-amber-300" : "text-cyan-100"
+        }`}
+      >
         {value}
       </div>
     </div>

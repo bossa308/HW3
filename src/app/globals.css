@@ -1,12 +1,26 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ผูกฟอนต์ไทยที่ประกาศใน layout.tsx เข้ากับคลาส font-sans ของ Tailwind */
+  /* ฟอนต์ไทย (เนื้อหา) + ฟอนต์ monospace (ตัวเลข/ป้ายเทคนิค) */
   --font-sans: var(--font-noto-thai), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 
 html,
 body {
-  background: #f8fafc; /* slate-50 */
-  color: #0f172a; /* slate-900 */
+  background-color: #0a1c38; /* น้ำเงินเข้มแบบกระดาษเขียนแบบ */
+  color: #dbeeff;
+}
+
+/* เส้นกริดจาง ๆ ทั้งหน้า ให้ดูเหมือนกระดาษ blueprint */
+body {
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+/* ช่องกรอกตัวเลขให้ลูกศร spinner จางลง เข้ากับธีมมืด */
+input[type="number"]::-webkit-inner-spin-button {
+  opacity: 0.4;
 }

@@ -1,8 +1,10 @@
 "use client";
 
-// ตารางอุปกรณ์ทั้งหมด — ค้นหาได้ + ลบได้ + มีแถวสรุปรวมด้านล่าง
+// ตารางอุปกรณ์ — ค้นหา + ลบ + แถวรวม (ธีม blueprint)
 import { useState } from "react";
 import { Device, computeMetrics, computeTotals, fmt } from "@/lib/calc";
+import Panel from "./Panel";
+import { SearchIcon, TrashIcon } from "./icons";
 
 export default function DeviceTable({
   devices,
@@ -20,62 +22,70 @@ export default function DeviceTable({
   );
   const totals = computeTotals(filtered, rate);
 
-  return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="flex items-center gap-2 text-lg font-bold text-slate-800">
-          📋 รายการอุปกรณ์ ({filtered.length})
-        </h2>
-        <input
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:w-64"
-          placeholder="🔍 ค้นหาชื่ออุปกรณ์..."
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-        />
-      </div>
+  const search = (
+    <div className="relative">
+      <SearchIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-cyan-300/40" />
+      <input
+        className="w-44 rounded-sm border border-cyan-400/30 bg-[#0a1c38] py-1.5 pl-8 pr-3 font-mono text-sm text-cyan-50 placeholder:text-cyan-300/30 outline-none focus:border-cyan-300 sm:w-56"
+        placeholder="ค้นหา..."
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+      />
+    </div>
+  );
 
+  return (
+    <Panel
+      index="03"
+      title={`Devices · รายการ (${filtered.length})`}
+      right={search}
+      bodyClass="p-0"
+    >
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200 text-left text-slate-500">
-              <th className="py-2 pr-3 font-medium">อุปกรณ์</th>
-              <th className="py-2 px-3 text-right font-medium">แรงดัน (V)</th>
-              <th className="py-2 px-3 text-right font-medium">กำลังไฟ (W)</th>
-              <th className="py-2 px-3 text-right font-medium">กระแส (A)</th>
-              <th className="py-2 px-3 text-right font-medium">R (Ω)</th>
-              <th className="py-2 px-3 text-right font-medium">ชม./วัน</th>
-              <th className="py-2 px-3 text-right font-medium">พลังงาน (kWh)</th>
-              <th className="py-2 px-3 text-right font-medium">ค่าไฟ (฿)</th>
-              <th className="py-2 pl-3"></th>
+            <tr className="border-b border-cyan-400/20 text-left font-mono text-[11px] uppercase tracking-wider text-cyan-300/60">
+              <th className="px-4 py-2.5 font-medium">อุปกรณ์</th>
+              <th className="px-3 py-2.5 text-right font-medium">V</th>
+              <th className="px-3 py-2.5 text-right font-medium">P (W)</th>
+              <th className="px-3 py-2.5 text-right font-medium">I (A)</th>
+              <th className="px-3 py-2.5 text-right font-medium">R (Ω)</th>
+              <th className="px-3 py-2.5 text-right font-medium">ชม.</th>
+              <th className="px-3 py-2.5 text-right font-medium">kWh</th>
+              <th className="px-3 py-2.5 text-right font-medium">฿/ด.</th>
+              <th className="px-4 py-2.5"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="font-mono tabular-nums">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={9} className="py-8 text-center text-slate-400">
-                  ไม่พบอุปกรณ์
+                <td colSpan={9} className="py-8 text-center text-cyan-300/40">
+                  — ไม่พบอุปกรณ์ —
                 </td>
               </tr>
             ) : (
               filtered.map((d) => {
                 const m = computeMetrics(d, rate);
                 return (
-                  <tr key={d.id} className="border-b border-slate-100 hover:bg-slate-50">
-                    <td className="py-2 pr-3 font-medium text-slate-800">{d.name}</td>
-                    <td className="py-2 px-3 text-right text-slate-600">{fmt(d.voltage, 0)}</td>
-                    <td className="py-2 px-3 text-right text-slate-600">{fmt(m.power)}</td>
-                    <td className="py-2 px-3 text-right text-slate-600">{fmt(m.current)}</td>
-                    <td className="py-2 px-3 text-right text-slate-600">{fmt(m.resistance)}</td>
-                    <td className="py-2 px-3 text-right text-slate-600">{fmt(d.hoursPerDay)}</td>
-                    <td className="py-2 px-3 text-right text-slate-600">{fmt(m.energy)}</td>
-                    <td className="py-2 px-3 text-right font-semibold text-rose-600">{fmt(m.cost)}</td>
-                    <td className="py-2 pl-3 text-right">
+                  <tr
+                    key={d.id}
+                    className="border-b border-cyan-400/10 transition hover:bg-cyan-400/5"
+                  >
+                    <td className="px-4 py-2 font-sans text-sky-50">{d.name}</td>
+                    <td className="px-3 py-2 text-right text-sky-100/70">{fmt(d.voltage, 0)}</td>
+                    <td className="px-3 py-2 text-right text-cyan-200">{fmt(m.power)}</td>
+                    <td className="px-3 py-2 text-right text-sky-100/70">{fmt(m.current)}</td>
+                    <td className="px-3 py-2 text-right text-sky-100/70">{fmt(m.resistance)}</td>
+                    <td className="px-3 py-2 text-right text-sky-100/70">{fmt(d.hoursPerDay)}</td>
+                    <td className="px-3 py-2 text-right text-sky-100/70">{fmt(m.energy)}</td>
+                    <td className="px-3 py-2 text-right font-semibold text-amber-300">{fmt(m.cost)}</td>
+                    <td className="px-4 py-2 text-right">
                       <button
                         onClick={() => onDelete(d.id)}
-                        className="rounded-md px-2 py-1 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                        className="rounded-sm p-1 text-cyan-300/40 transition hover:bg-rose-500/10 hover:text-rose-400"
                         title="ลบ"
                       >
-                        🗑️
+                        <TrashIcon className="h-4 w-4" />
                       </button>
                     </td>
                   </tr>
@@ -84,20 +94,20 @@ export default function DeviceTable({
             )}
           </tbody>
           {filtered.length > 0 && (
-            <tfoot>
-              <tr className="border-t-2 border-slate-200 font-semibold text-slate-800">
-                <td className="py-2 pr-3">รวม</td>
+            <tfoot className="font-mono tabular-nums">
+              <tr className="border-t border-cyan-300/40 text-cyan-100">
+                <td className="px-4 py-2.5 font-sans font-semibold uppercase tracking-wider">รวม</td>
                 <td></td>
-                <td className="py-2 px-3 text-right">{fmt(totals.power)}</td>
+                <td className="px-3 py-2.5 text-right font-semibold">{fmt(totals.power)}</td>
                 <td colSpan={3}></td>
-                <td className="py-2 px-3 text-right">{fmt(totals.energy)}</td>
-                <td className="py-2 px-3 text-right text-rose-600">{fmt(totals.cost)}</td>
+                <td className="px-3 py-2.5 text-right font-semibold">{fmt(totals.energy)}</td>
+                <td className="px-3 py-2.5 text-right font-semibold text-amber-300">{fmt(totals.cost)}</td>
                 <td></td>
               </tr>
             </tfoot>
           )}
         </table>
       </div>
-    </div>
+    </Panel>
   );
 }

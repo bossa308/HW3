@@ -1,5 +1,7 @@
-// การ์ดสรุปยอดด้านบนสุดของหน้า (จำนวนอุปกรณ์ / กำลังไฟรวม / พลังงานรวม / ค่าไฟ)
+// แถวค่าสรุปด้านบน — สไตล์ "หน้าปัดเครื่องวัด" (instrument readout)
 import { Device, computeTotals, fmt } from "@/lib/calc";
+import { Corners } from "./Panel";
+import { GridIcon, BoltIcon, BatteryIcon, BanknoteIcon } from "./icons";
 
 export default function SummaryCards({
   devices,
@@ -12,40 +14,36 @@ export default function SummaryCards({
 
   const cards = [
     {
+      tag: "QTY",
       label: "จำนวนอุปกรณ์",
       value: fmt(devices.length, 0),
       unit: "รายการ",
-      icon: "🔌",
-      ring: "ring-indigo-200",
-      bg: "from-indigo-50 to-white",
-      text: "text-indigo-600",
+      Icon: GridIcon,
+      color: "text-cyan-200",
     },
     {
+      tag: "P-TOT",
       label: "กำลังไฟฟ้ารวม",
       value: fmt(totals.power, 0),
-      unit: `วัตต์ (${fmt(totals.power / 1000)} kW)`,
-      icon: "⚡",
-      ring: "ring-amber-200",
-      bg: "from-amber-50 to-white",
-      text: "text-amber-600",
+      unit: `วัตต์ · ${fmt(totals.power / 1000)} kW`,
+      Icon: BoltIcon,
+      color: "text-cyan-300",
     },
     {
-      label: "พลังงานรวมต่อเดือน",
+      tag: "E-TOT",
+      label: "พลังงาน/เดือน",
       value: fmt(totals.energy),
       unit: "kWh / เดือน",
-      icon: "🔋",
-      ring: "ring-emerald-200",
-      bg: "from-emerald-50 to-white",
-      text: "text-emerald-600",
+      Icon: BatteryIcon,
+      color: "text-sky-300",
     },
     {
+      tag: "COST",
       label: "ค่าไฟโดยประมาณ",
       value: fmt(totals.cost),
       unit: "บาท / เดือน",
-      icon: "💸",
-      ring: "ring-rose-200",
-      bg: "from-rose-50 to-white",
-      text: "text-rose-600",
+      Icon: BanknoteIcon,
+      color: "text-amber-300",
     },
   ];
 
@@ -53,15 +51,21 @@ export default function SummaryCards({
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {cards.map((c) => (
         <div
-          key={c.label}
-          className={`rounded-2xl bg-gradient-to-br ${c.bg} p-5 shadow-sm ring-1 ${c.ring}`}
+          key={c.tag}
+          className="relative border border-cyan-400/25 bg-[#0d2748]/40 p-4"
         >
+          <Corners />
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500">{c.label}</span>
-            <span className="text-2xl">{c.icon}</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-400/60">
+              {c.tag}
+            </span>
+            <c.Icon className={`h-5 w-5 ${c.color} opacity-70`} />
           </div>
-          <div className={`mt-2 text-3xl font-bold ${c.text}`}>{c.value}</div>
-          <div className="mt-1 text-xs text-slate-400">{c.unit}</div>
+          <div className={`mt-3 font-mono text-3xl font-bold tabular-nums ${c.color}`}>
+            {c.value}
+          </div>
+          <div className="mt-1.5 text-xs text-sky-100/60">{c.label}</div>
+          <div className="font-mono text-[11px] text-cyan-400/50">{c.unit}</div>
         </div>
       ))}
     </div>
