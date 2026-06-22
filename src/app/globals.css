@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* ผูกฟอนต์ไทยที่ประกาศใน layout.tsx เข้ากับคลาส font-sans ของ Tailwind */
+  --font-sans: var(--font-noto-thai), system-ui, sans-serif;
+}
+
+html,
+body {
+  background: #f8fafc; /* slate-50 */
+  color: #0f172a; /* slate-900 */
+}
