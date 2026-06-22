@@ -41,7 +41,7 @@ export default function Home() {
           <div>
             <h1 className="text-2xl font-bold sm:text-3xl">⚡ ระบบจัดการโหลดไฟฟ้า</h1>
             <p className="mt-1 text-sm text-indigo-100">
-              คำนวณกำลังไฟ พลังงาน และค่าไฟของอุปกรณ์ในบ้าน — Next.js + Vercel
+              คำนวณกำลังไฟ พลังงาน และค่าไฟของอุปกรณ์ในบ้าน
             </p>
           </div>
           <div className="flex items-center gap-2 rounded-xl bg-white/15 px-4 py-2 backdrop-blur">

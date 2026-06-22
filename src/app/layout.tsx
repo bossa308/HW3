@@ -10,7 +10,7 @@ const notoThai = Noto_Sans_Thai({
 
 export const metadata: Metadata = {
   title: "ระบบจัดการโหลดไฟฟ้า | hw3",
-  description: "คำนวณกำลังไฟ พลังงาน และค่าไฟของอุปกรณ์ไฟฟ้า สร้างด้วย Next.js + Vercel",
+  description: "คำนวณกำลังไฟ พลังงาน และค่าไฟของอุปกรณ์ไฟฟ้า",
 };
 
 export default function RootLayout({
